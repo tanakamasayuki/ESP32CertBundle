@@ -96,6 +96,15 @@ jobs:
         run: |
           git commit -m "Update bundle ${{ steps.version.outputs.version }}" || echo "No changes to commit."
 
+      - name: Build release archive
+        if: steps.proceed.outputs.run_release == 'true'
+        id: archive
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          ARCHIVE="ESP32CertBundle-${VERSION}.zip"
+          git archive --format=zip --prefix="ESP32CertBundle/" HEAD > "$ARCHIVE"
+          echo "archive=$ARCHIVE" >> "$GITHUB_OUTPUT"
+
       - name: Create tag and push
         if: steps.proceed.outputs.run_release == 'true'
         env:
@@ -118,3 +127,5 @@ jobs:
 
             - Bundle refreshed by update-bundle workflow.
             - Library version bumped to v${{ steps.version.outputs.version }}.
+          files: |
+            ${{ steps.archive.outputs.archive }}

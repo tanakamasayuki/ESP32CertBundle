@@ -63,6 +63,7 @@
 - GitHub Actions ワークフロー（`.github/workflows/update-bundle.yml`）が毎月 1 日の 00:00 UTC に実行され、更新が検出された場合は自動でリリースを作成します。
 - リポジトリの *Run workflow* から手動実行すれば、任意のタイミングで更新できます。
 - 手動実行時に `force_release=true`（必要に応じて `version_level`）を指定すると、バンドルに変更がなくてもバージョンを更新してリリースを作成できます。
+- 自動生成されたリリースには Arduino ライブラリマネージャ向けのアーカイブ（`ESP32CertBundle-<version>.zip`）が添付されます。
 
 ## コントリビュート
 Issue や Pull Request は歓迎します。コントリビュートの際は次の点をご留意ください。
