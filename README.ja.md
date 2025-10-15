@@ -39,6 +39,7 @@
 
 ### 前提条件
 - Python 3.8 以上（標準ライブラリの `hashlib`、`struct`、`ssl` が利用可能なこと）。
+- Python パッケージ `cryptography`（`pip install cryptography` で導入）。
 - `wget` や `curl` など CA ストアを取得できる HTTP クライアント。
 - ESP-IDF 付属の `gen_crt_bundle.py`（ツールが自動でダウンロードします）。
 - 生成されたヘッダを取り込むための ESP32 ツールチェインまたは Arduino IDE 環境。

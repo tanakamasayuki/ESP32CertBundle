@@ -39,6 +39,7 @@ The pre-generated header is sufficient for most users. If you need to refresh it
 
 ### Prerequisites
 - Python 3.8 or later with standard library `hashlib`, `struct`, and `ssl`.
+- Python package `cryptography` (`pip install cryptography`).
 - `wget` (or another HTTP client such as `curl`) to download the source CA list.
 - ESP-IDF `gen_crt_bundle.py` helper script (downloaded automatically by the tool).
 - An ESP32 toolchain or Arduino IDE environment for consuming the regenerated header.

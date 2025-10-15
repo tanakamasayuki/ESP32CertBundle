@@ -37,6 +37,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: pip install cryptography
+
       - name: Refresh bundle header
         run: python tools/update_bundle.py
 
