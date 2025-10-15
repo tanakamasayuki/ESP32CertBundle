@@ -60,6 +60,11 @@ The pre-generated header is sufficient for most users. If you need to refresh it
 - Review the diff of the generated header to ensure only certificate content changed.
 - If the Espressif script introduces breaking changes, consult the [ESP-IDF documentation](https://docs.espressif.com/projects/esp-idf/) for updated usage notes.
 
+## Automation
+- A scheduled GitHub Actions workflow (`.github/workflows/update-bundle.yml`) runs on the first day of every month to refresh the bundle and publish a release when a change is detected.
+- Dispatch the workflow manually via *Run workflow* for an on-demand refresh.
+- Provide `force_release=true` (and optionally `version_level`) when dispatching to bump the version and publish a release even if the bundle is unchanged.
+
 ## Contributing
 Issues and pull requests are welcome. When contributing, please:
 - Describe the motivation for the change and include reproduction steps where applicable.
