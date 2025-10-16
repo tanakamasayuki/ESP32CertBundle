@@ -90,6 +90,9 @@ jobs:
           if git ls-files --error-unmatch src/esp32_cert_bundle.h >/dev/null 2>&1; then
             git add src/esp32_cert_bundle.h
           fi
+          git ls-files --modified --others --exclude-standard -- 'examples/**/sketch.yaml' | while read -r file; do
+            git add "$file"
+          done
 
       - name: Commit changes
         if: steps.proceed.outputs.run_release == 'true'
