@@ -77,7 +77,10 @@ def update_sketch_files(
         content = sketch.read_text(encoding="utf-8")
         if not pattern.search(content):
             continue
-        updated = pattern.sub(rf"\1{new_version}\2", content)
+        updated = pattern.sub(
+            lambda match: f"{match.group(1)}{new_version}{match.group(2)}",
+            content,
+        )
         sketch.write_text(updated, encoding="utf-8")
 
 
