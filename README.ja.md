@@ -31,8 +31,10 @@
 
 ## 同梱物
 - `src/esp32_cert_bundle.h`: PROGMEM に配置されたルート証明書バンドル。
+- `src/esp32_cert_bundle_version.h`: バージョンと証明書件数を含むリリースメタデータ（自動生成）。
 - `examples/BasicUsage/BasicUsage.ino`: HTTPS 通信の最小サンプル。
 - `tools/update_bundle.py`: バンドルを再生成するための補助スクリプト（メンテナ向け）。
+- `tools/generate_version_header.py`（旧 `bump_version.py`）: リリース時にバージョンメタデータファイルを書き出すメンテナ向けスクリプト。
 
 ## 証明書バンドルの再生成（上級者向け）
 配布済みのヘッダで通常は十分です。バンドルを刷新したい場合のみ、以下の手順を実施してください。
@@ -59,10 +61,22 @@
 - 生成されたヘッダの差分を確認し、証明書データ以外に不要な変更がないことを確かめてください。
 - Espressif 側のスクリプトに破壊的変更が入った場合は、[ESP-IDF ドキュメント](https://docs.espressif.com/projects/esp-idf/) を参照し、必要に応じてツールやコードを調整してください。
 
+## バージョンとリリース
+- 自動リリースは処理対象のソースバンドルの UTC タイムスタンプを基にした `YYYYMMDD.REVISION.FIX` を採用します（例: `2025-12-02T04:12:02+00:00` → `20251202.0.0`）。
+- `REVISION` は `0` 固定、`FIX` は同じソースバンドルを強制再公開する場合に 0 から重複しないように増加させます。
+- ソースのタイムスタンプが変わらず、強制フラグも指定されない場合は再生成とリリースをスキップします。
+- リリース時には計算されたバージョンと証明書件数を `src/esp32_cert_bundle_version.h` に書き出します（件数はダウンロード済みの `tools/cache/cacert.pem` に含まれる `BEGIN CERTIFICATE` 行数で算出します）。
+  ```c
+  #define ESP32_CERT_BUNDLE_VERSION_MAJOR 20251202
+  #define ESP32_CERT_BUNDLE_VERSION_MINOR 0
+  #define ESP32_CERT_BUNDLE_VERSION_PATCH 0
+  #define ESP32_CERT_BUNDLE_VERSION_STR "20251202.0.0"
+  #define ESP32_CERT_BUNDLE_COUNT 144
+  ```
+
 ## 自動化
-- GitHub Actions ワークフロー（`.github/workflows/update-bundle.yml`）が毎月 1 日の 00:00 UTC に実行され、更新が検出された場合は自動でリリースを作成します。
-- リポジトリの *Run workflow* から手動実行すれば、任意のタイミングで更新できます。
-- 手動実行時に `force_release=true`（必要に応じて `version_level`）を指定すると、バンドルに変更がなくてもバージョンを更新してリリースを作成できます。
+- GitHub Actions ワークフロー（`.github/workflows/update-bundle.yml`）が毎月 1 日と 16 日の 00:00 UTC に実行され、ソースのタイムスタンプが変わった場合にバンドルを再生成します。
+- リポジトリの *Run workflow* から任意のタイミングで手動実行できます。強制フラグを付けると同じソースバンドルを再公開でき、上記の `FIX` コンポーネントのみが増分されます。
 - 自動生成されたリリースには Arduino ライブラリマネージャ向けのアーカイブ（`ESP32CertBundle-<version>.zip`）が添付されます。
 
 ## コントリビュート

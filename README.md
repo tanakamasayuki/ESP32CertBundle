@@ -31,8 +31,10 @@ This repository hosts an Arduino-compatible library that supplies an ESP32 devic
 
 ## Library Contents
 - `src/esp32_cert_bundle.h`: PROGMEM-stored root certificate bundle.
+- `src/esp32_cert_bundle_version.h`: Auto-generated release metadata (version and certificate count).
 - `examples/BasicUsage/BasicUsage.ino`: Minimal sketch showing HTTPS connectivity.
 - `tools/update_bundle.py`: Optional helper for maintainers to regenerate the bundle.
+- `tools/generate_version_header.py` (renamed from `bump_version.py`): Maintainer helper to stamp the version metadata file during releases.
 
 ## Regenerating the Certificate Bundle (Advanced)
 The pre-generated header is sufficient for most users. If you need to refresh it:
@@ -61,10 +63,22 @@ The pre-generated header is sufficient for most users. If you need to refresh it
 - Review the diff of the generated header to ensure only certificate content changed.
 - If the Espressif script introduces breaking changes, consult the [ESP-IDF documentation](https://docs.espressif.com/projects/esp-idf/) for updated usage notes.
 
+## Versioning and Releases
+- Automated releases use `YYYYMMDD.REVISION.FIX` based on the UTC timestamp of the processed source bundle (for example, `2025-12-02T04:12:02+00:00` becomes `20251202.0.0`).
+- `REVISION` is fixed at `0`; `FIX` increments only when the same source bundle must be republished with a force flag so tags remain unique.
+- If the source timestamp is unchanged and no force flag is provided, the workflow skips regeneration and release.
+- Each release writes `src/esp32_cert_bundle_version.h` with the computed version and certificate count (the count is the number of `BEGIN CERTIFICATE` lines in the downloaded `tools/cache/cacert.pem`):
+  ```c
+  #define ESP32_CERT_BUNDLE_VERSION_MAJOR 20251202
+  #define ESP32_CERT_BUNDLE_VERSION_MINOR 0
+  #define ESP32_CERT_BUNDLE_VERSION_PATCH 0
+  #define ESP32_CERT_BUNDLE_VERSION_STR "20251202.0.0"
+  #define ESP32_CERT_BUNDLE_COUNT 144
+  ```
+
 ## Automation
-- A scheduled GitHub Actions workflow (`.github/workflows/update-bundle.yml`) runs on the first day of every month to refresh the bundle and publish a release when a change is detected.
-- Dispatch the workflow manually via *Run workflow* for an on-demand refresh.
-- Provide `force_release=true` (and optionally `version_level`) when dispatching to bump the version and publish a release even if the bundle is unchanged.
+- A scheduled GitHub Actions workflow (`.github/workflows/update-bundle.yml`) runs on the 1st and 16th at 00:00 UTC to refresh the bundle when the source timestamp changes.
+- Dispatch the workflow manually via *Run workflow* for an on-demand check; include a force flag when you need to republish the same source bundle, which bumps only the `FIX` component described above.
 - Each automated release attaches an Arduino Library Manager–ready archive (`ESP32CertBundle-<version>.zip`) that mirrors the repository layout.
 
 ## Contributing
