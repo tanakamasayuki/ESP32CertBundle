@@ -9,10 +9,6 @@ on:
         description: "Force a release even if no bundle changes are detected"
         required: false
         default: "false"
-      version_level:
-        description: "Version component to bump when forcing a release (major, minor, patch)"
-        required: false
-        default: "patch"
 
 permissions:
   contents: write
@@ -75,21 +71,19 @@ jobs:
         if: steps.proceed.outputs.run_release == 'false'
         run: echo "No updates detected and force_release disabled. Skipping remainder of workflow."
 
-      - name: Bump version
+      - name: Generate version metadata
         if: steps.proceed.outputs.run_release == 'true'
         id: version
         run: |
-          LEVEL="${{ github.event.inputs.version_level || 'patch' }}"
-          VERSION=$(python tools/bump_version.py --level "$LEVEL")
+          VERSION=$(python tools/generate_version_header.py)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Stage files
         if: steps.proceed.outputs.run_release == 'true'
         run: |
           git add library.properties
-          if git ls-files --error-unmatch src/esp32_cert_bundle.h >/dev/null 2>&1; then
-            git add src/esp32_cert_bundle.h
-          fi
+          if [ -f src/esp32_cert_bundle.h ]; then git add src/esp32_cert_bundle.h; fi
+          if [ -f src/esp32_cert_bundle_version.h ]; then git add src/esp32_cert_bundle_version.h; fi
           git ls-files --modified --others --exclude-standard -- 'examples/**/sketch.yaml' | while read -r file; do
             git add "$file"
           done
