@@ -42,7 +42,7 @@ jobs:
       - name: Detect changes
         id: diff
         run: |
-          if git diff --quiet src/esp32_cert_bundle.h; then
+          if git diff --quiet -- src/esp32_cert_bundle.h src/esp32_cert_bundle.bin; then
             echo "bundle_changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "bundle_changed=true" >> "$GITHUB_OUTPUT"
@@ -83,6 +83,7 @@ jobs:
         run: |
           git add library.properties
           if [ -f src/esp32_cert_bundle.h ]; then git add src/esp32_cert_bundle.h; fi
+          if [ -f src/esp32_cert_bundle.bin ]; then git add src/esp32_cert_bundle.bin; fi
           if [ -f src/esp32_cert_bundle_version.h ]; then git add src/esp32_cert_bundle_version.h; fi
           git ls-files --modified --others --exclude-standard -- 'examples/**/sketch.yaml' | while read -r file; do
             git add "$file"

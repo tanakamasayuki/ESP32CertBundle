@@ -97,6 +97,11 @@ def write_header(
     header_path.write_text("\n".join(header_lines), encoding="utf-8")
 
 
+def write_bundle_bin(source_path: pathlib.Path, dest_path: pathlib.Path) -> None:
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_bytes(source_path.read_bytes())
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -125,7 +130,9 @@ def main() -> None:
     cacert_timestamp = download(args.cacert_url, cacert, force=args.force_download)
 
     bundle_bin = run_gen_script(gen_script, cacert, cache_dir)
+    bundle_path = repo_root / "src" / "esp32_cert_bundle.bin"
     header_path = repo_root / "src" / "esp32_cert_bundle.h"
+    write_bundle_bin(bundle_bin, bundle_path)
     write_header(bundle_bin, header_path, cacert_timestamp)
 
 

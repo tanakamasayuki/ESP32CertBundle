@@ -30,6 +30,7 @@ This repository hosts an Arduino-compatible library that supplies an ESP32 devic
 > **Note:** `setCACertBundle()` loads a consolidated root-CA file. It enables validation against the full public trust store, but the generated header is comparatively large because it embeds every trusted certificate.
 
 ## Library Contents
+- `src/esp32_cert_bundle.bin`: Raw ESP-IDF certificate bundle emitted by `gen_crt_bundle.py`.
 - `src/esp32_cert_bundle.h`: PROGMEM-stored root certificate bundle.
 - `src/esp32_cert_bundle_version.h`: Auto-generated release metadata (version and certificate count).
 - `examples/BasicUsage/BasicUsage.ino`: Minimal sketch showing HTTPS connectivity.
@@ -51,8 +52,8 @@ The pre-generated header is sufficient for most users. If you need to refresh it
    ```bash
    python tools/update_bundle.py
    ```
-   The script downloads (or reuses cached copies of) the Espressif generator and Mozilla CA bundle, invokes `gen_crt_bundle.py`, and writes `src/esp32_cert_bundle.h`.
-2. Verify the generated header and commit the changes.
+   The script downloads (or reuses cached copies of) the Espressif generator and Mozilla CA bundle, invokes `gen_crt_bundle.py`, stores the raw bundle as `src/esp32_cert_bundle.bin`, and writes `src/esp32_cert_bundle.h`.
+2. Verify the generated bundle files and commit the changes.
 
 > **Alternative:** If you prefer to drive the Espressif generator manually, fetch `gen_crt_bundle.py` and `cacert.pem` as shown in the Espressif documentation, run `python gen_crt_bundle.py -i cacert.pem`, and then execute `python tools/update_bundle.py` to convert the resulting binary into a header.
 
@@ -60,7 +61,7 @@ The pre-generated header is sufficient for most users. If you need to refresh it
 
 ### Keeping the Bundle Current
 - Repeat the regeneration steps whenever the Mozilla trust store is updated.
-- Review the diff of the generated header to ensure only certificate content changed.
+- Review the diff of `src/esp32_cert_bundle.bin` and `src/esp32_cert_bundle.h` to ensure only certificate content changed.
 - If the Espressif script introduces breaking changes, consult the [ESP-IDF documentation](https://docs.espressif.com/projects/esp-idf/) for updated usage notes.
 
 ## Versioning and Releases

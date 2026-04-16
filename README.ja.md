@@ -30,6 +30,7 @@
 > **備考:** `setCACertBundle()` は複数のルート CA をまとめたファイルを読み込みます。一般的な公開証明書の大半を検証できますが、その分ヘッダファイルのサイズは大きくなります。
 
 ## 同梱物
+- `src/esp32_cert_bundle.bin`: `gen_crt_bundle.py` が出力した生の ESP-IDF 証明書バンドル。
 - `src/esp32_cert_bundle.h`: PROGMEM に配置されたルート証明書バンドル。
 - `src/esp32_cert_bundle_version.h`: バージョンと証明書件数を含むリリースメタデータ（自動生成）。
 - `examples/BasicUsage/BasicUsage.ino`: HTTPS 通信の最小サンプル。
@@ -51,14 +52,14 @@
    ```bash
    python tools/update_bundle.py
    ```
-   スクリプトは Espressif の生成スクリプトと Mozilla CA バンドルをダウンロード（またはキャッシュを再利用）し、`gen_crt_bundle.py` を実行して `src/esp32_cert_bundle.h` を出力します。
-2. 生成されたヘッダの内容を確認し、必要に応じてコミットします。
+   スクリプトは Espressif の生成スクリプトと Mozilla CA バンドルをダウンロード（またはキャッシュを再利用）し、`gen_crt_bundle.py` を実行して生バンドルを `src/esp32_cert_bundle.bin` に保存し、`src/esp32_cert_bundle.h` を出力します。
+2. 生成されたバンドルファイルの内容を確認し、必要に応じてコミットします。
 
 > **補足:** Espressif 公式ドキュメントの手順で `gen_crt_bundle.py` と `cacert.pem` を手動ダウンロードして `python gen_crt_bundle.py -i cacert.pem` を実行し、その後で `python tools/update_bundle.py` を実行してバイナリをヘッダへ変換することもできます。
 
 ### 最新状態の維持
 - Mozilla の信頼ストアが更新された際は、上記の再生成手順を再実行してください。
-- 生成されたヘッダの差分を確認し、証明書データ以外に不要な変更がないことを確かめてください。
+- `src/esp32_cert_bundle.bin` と `src/esp32_cert_bundle.h` の差分を確認し、証明書データ以外に不要な変更がないことを確かめてください。
 - Espressif 側のスクリプトに破壊的変更が入った場合は、[ESP-IDF ドキュメント](https://docs.espressif.com/projects/esp-idf/) を参照し、必要に応じてツールやコードを調整してください。
 
 ## バージョンとリリース
