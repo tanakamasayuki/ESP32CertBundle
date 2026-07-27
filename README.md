@@ -5,6 +5,8 @@
 ## Overview
 This repository hosts an Arduino-compatible library that supplies an ESP32 device with an up-to-date X.509 root certificate bundle. A pre-generated header is included so you can reference the bundle immediately without running any tooling.
 
+https://curl.se/docs/caextract.html
+
 ## Features
 - Ships a pre-generated `x509_crt_bundle` array ready for use with `esp_crt_bundle_attach()`.
 - Works out of the box with Arduino-ESP32 v3.x (IDF 5 base) and compatible frameworks.
