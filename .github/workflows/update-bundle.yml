@@ -2,7 +2,7 @@ name: Update Certificate Bundle
 
 on:
   schedule:
-    - cron: "0 0 1,16 * *" # Run monthly on the 1or16 at 00:00 UTC
+    - cron: "0 0 */7 * *" # Runs at 00:00, every 7 days
   workflow_dispatch:
     inputs:
       force_release:
