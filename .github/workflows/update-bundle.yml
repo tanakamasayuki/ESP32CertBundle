@@ -34,7 +34,8 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install cryptography
+        # gen_crt_bundle.py on esp-idf master uses rich_click + esp_pylib
+        run: pip install cryptography rich_click esp-pylib
 
       - name: Refresh bundle header
         run: python tools/update_bundle.py
